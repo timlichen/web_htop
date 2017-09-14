@@ -7,6 +7,12 @@ class System_Stats:
         self.cpu_info_blob = {
             "cpu_count": psutil.cpu_count() 
         }
+        self.memory_info_blob = {
+            "memory" : {},
+            "swap" : {}
+        }
+        self.disk_info_blob = {
+        }
 
     def cpu_info(self):
         for x in range(self.cpu_info_blob['cpu_count'] - 1):
@@ -41,52 +47,84 @@ class System_Stats:
         print "pid number and associated name added to cpu_info_blob"
         
         return self
+        
+    def bytes2human(self, n):
+        # http://code.activestate.com/recipes/578019
+        # >>> bytes2human(10000)
+        # '9.8K'
+        # >>> bytes2human(100001221)
+        # '95.4M'
+        symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
+        prefix = {}
+        for i, s in enumerate(symbols):
+            prefix[s] = 1 << (i + 1) * 10
+        for s in reversed(symbols):
+            if n >= prefix[s]:
+                value = float(n) / prefix[s]
+                return '%.1f%s' % (value, s)
+        return "%sB" % n
+
+
+    def pprint_ntuple(self, nt):
+        mem_blob = {}
+        for name in nt._fields:
+            value = getattr(nt, name)
+            if name != 'percent':
+                value = self.bytes2human(value)
+            mem_blob[name.capitalize()] = value 
+        
+        return mem_blob
     
     def memory_usage(self):
-        memory = pprint_ntuple(psutil.virtual_memory())
-        swap =  pprint_ntuple(psutil.swap_memory())
-        print memory
-        print swap
+        self.memory_info_blob["memory"] = self.pprint_ntuple(psutil.virtual_memory())
+        self.memory_info_blob["swap"] = self.pprint_ntuple(psutil.swap_memory())
+
+        return self
+    
+    def disk_info_blob_make(self):
+        self.disk_usage()
+        self.disk_io()
+        print self.disk_info_blob
+
+    
+    def disk_usage(self):
+        partitions = psutil.disk_partitions()
+        for part in partitions:
+            self.disk_info_blob[str(part[1])] = self.pprint_ntuple(psutil.disk_usage(str(part[1])))
+    
+    def disk_io(self):
+        for phys_disk, io in psutil.disk_io_counters(perdisk=True, nowrap=True):
+            self.disk_info_blob[phys_disk] = io
+
         
-    def bytes2human(n):
-    # http://code.activestate.com/recipes/578019
-    # >>> bytes2human(10000)
-    # '9.8K'
-    # >>> bytes2human(100001221)
-    # '95.4M'
-    symbols = ('K', 'M', 'G', 'T', 'P', 'E', 'Z', 'Y')
-    prefix = {}
-    for i, s in enumerate(symbols):
-        prefix[s] = 1 << (i + 1) * 10
-    for s in reversed(symbols):
-        if n >= prefix[s]:
-            value = float(n) / prefix[s]
-            return '%.1f%s' % (value, s)
-    return "%sB" % n
 
-
-def pprint_ntuple(nt):
-    for name in nt._fields:
-        value = getattr(nt, name)
-        if name != 'percent':
-            value = bytes2human(value)
-        print('%-10s : %7s' % (name.capitalize(), value))
+        
+    
 
 
 sys_1 = System_Stats()
 # sys_1.cpu_info()
 # sys_1.pid_info()
 # sys_1.cpu_load_avg()
-sys_1.memory_usage()
+# sys_1.memory_usage()
+# print sys_1.memory_info_blob
+sys_1.disk_info_blob_make()
 
 # print sys_1.cpu_info_blob
+
+###########
+# PHASE 1 #
+###########
 
 # cpu percentages for each core - DONE
 # Number of tasks - DONE
 # number of processes running - DONE
 # Load Average - DONE
-# Mem usage 
-# Swap usage
+# Mem usage - DONE
+# Swap usage - DONE
+# Network stats
+# Disk Stats
+
 # The pid table should include
 ## PID
 ## User
@@ -108,3 +146,14 @@ sys_1.memory_usage()
 # Nice -
 # Nice +
 # Process Tree
+
+###########
+# PHASE 2 #
+###########
+
+# Memory alerts
+# Disk alerts
+# Use sockets to monitor multiple systems and report back to a server
+# Create web interface to view multiple stats
+
+# END
