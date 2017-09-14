@@ -43,8 +43,10 @@ class System_Stats:
         return self
     
     def memory_usage(self):
-        v_mem=psutil.virtual_memory()
-        print v_mem
+        memory = pprint_ntuple(psutil.virtual_memory())
+        swap =  pprint_ntuple(psutil.swap_memory())
+        print memory
+        print swap
         
     def bytes2human(n):
     # http://code.activestate.com/recipes/578019
@@ -77,7 +79,7 @@ sys_1 = System_Stats()
 # sys_1.cpu_load_avg()
 sys_1.memory_usage()
 
-print sys_1.cpu_info_blob
+# print sys_1.cpu_info_blob
 
 # cpu percentages for each core - DONE
 # Number of tasks - DONE
