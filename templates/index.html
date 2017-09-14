@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Htop on Flask</title>
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='normalize.css')}}">
+    <link rel=stylesheet type=text/css href="{{ url_for('static', filename='skeleton.css')}}">
+    
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js">
+    </script>
+    
+    <script type=text/javascript>
+        $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    </script>
+
+    <script>
+    // $(document).ready(function(){
+    //         var global_pid_data = {}
+
+    //         function show_pid_data(){
+    //             // console.log(global_pid_data)
+    //             for (var key in global_pid_data.result){
+    //                 // console.log("Process name: " + key + " the pid for this process is: " + global_pid_data.result[key])
+    //                 var string = "<tr><td>" 
+    //                     + key 
+    //                     + "</td><td>" 
+    //                     + global_pid_data.result[key] + "</td></tr>"
+    //                 $("#pid_info").append(string)
+    //             }
+    //         }
+
+    //         function get_pid_data(){
+    //             $.getJSON($SCRIPT_ROOT + '/_get_pid', {}, function(data){
+    //                 global_pid_data = data
+    //             })
+    //             show_pid_data()
+    //         }        
+    //         setInterval(get_pid_data, 4500)        
+    //     })
+    </script>
+    
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="twelve columns">
+                <table calss="u-full-width">
+                    <thead>
+                        <tr>
+                            <th>PID</th>
+                            <th>Process Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pid_info">
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
