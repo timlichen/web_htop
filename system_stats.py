@@ -82,7 +82,7 @@ class System_Stats:
         return self
     
     def disk_info_blob_make(self):
-        self.disk_usage()
+        # self.disk_usage()
         self.disk_io()
         print self.disk_info_blob
 
@@ -93,15 +93,15 @@ class System_Stats:
             self.disk_info_blob[str(part[1])] = self.pprint_ntuple(psutil.disk_usage(str(part[1])))
     
     def disk_io(self):
-        for phys_disk, io in psutil.disk_io_counters(perdisk=True, nowrap=True):
-            self.disk_info_blob[phys_disk] = io
-
-        
-
-        
     
+        disk_io_info = psutil.disk_io_counters(perdisk=True, nowrap=True)
+        for key in disk_io_info:
+            print "read_count", disk_io_info[key].read_count
+            print "write_count", disk_io_info[key].write_count
+            print "read_bytes", disk_io_info[key].read_bytes
+            print "write_bytes", disk_io_info[key].write_bytes
 
-
+            
 sys_1 = System_Stats()
 # sys_1.cpu_info()
 # sys_1.pid_info()
